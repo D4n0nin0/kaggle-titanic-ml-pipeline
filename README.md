@@ -18,13 +18,9 @@ feature engineering, model training with hyperparameter tuning, and Docker conta
 
 ```bash
 
-# Install Dependencies
+pip install -r requirements.txt
 
-`pip install -r requirements.txt`
-
-# Run the complete pipeline
-
-`python src/train.py`
+python src/train.py
 
 
 
