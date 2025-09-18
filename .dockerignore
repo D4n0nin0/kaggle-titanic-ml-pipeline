@@ -1,0 +1,13 @@
+__pycache__
+*.pyc
+*.pyo
+.pytest_cache
+.mypy_cache
+.data
+.ipynb_checkpoints
+Dockerfile
+.git
+.github
+README.md
+notebooks/
+data/
