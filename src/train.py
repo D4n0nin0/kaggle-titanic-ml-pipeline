@@ -112,7 +112,34 @@ def main():
         print(f" Error entrenando modelo: {e}")
         return
     
+    # guardar el modelo entrenado para que la API pueda usarlo
+    import joblib
+    from pathlib import Path
     
+    # ...(coddigo existente de entrenamiento)
+    
+    print("\n Guardando modelo entrenado...")
+    try:
+        #crear carpeta models si no existe
+        models_dir = Path('models')
+        models_dir.mkdir(exist_ok=True)
+        
+        # guardar modelo
+        model_path = models_dir / 'best_model.pkl'
+        joblib.dump(model, model_path)
+        print(f" Modelo guardado en: {model_path}")
+        
+        # Tambien guardar las columnas esperadas para la API
+        expected_columns = X_train.columns.tolist()
+        joblib.dump(expected_columns, models_dir / 'expected_columns.pkl')
+        print(f" Columnas esperadas guardadas en: {len(expected_columns)} columnas")
+        
+    except Exception as e:
+        print(f" Error guardando modelo: {e}")
+    return 
+    
+        
+     
     # 6. Evaluar y generar predicciones
     print("\n 6/6 - Generando predicciones...")
     try:
