@@ -1,0 +1,46 @@
+name: Titanic ML Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-and-train:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+
+    - name: Run data preprocessing
+      run: |
+        python -c "
+        from src.data_preprocessing import preprocess_data
+        preprocess_data('data/train.csv', 'data/processed_train.csv')
+        "
+
+    - name: Train model
+      run: |
+        python src/train.py
+
+    - name: Run tests
+      run: |
+        python -m pytest tests/ -v
+
+    - name: Verify API import
+      run: |
+        python -c "
+        from src.api import predict
+        print('API module imported successfully')
+        "
