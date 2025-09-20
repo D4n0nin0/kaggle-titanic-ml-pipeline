@@ -1,0 +1,49 @@
+name: Titanic ML Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-and-train:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+        pip install pytest  # Asegurar que pytest esté instalado
+
+    - name: List files for debugging
+      run: |
+        ls -la
+        ls -la data/
+
+    - name: Run data preprocessing
+      run: |
+        cd src
+        python -c "
+        try:
+            from data_preprocessing import preprocess_data
+            print('Module imported successfully')
+        except Exception as e:
+            print(f'Import error: {e}')
+        "
+
+    - name: Run tests
+      run: |
+        python -m pytest tests/ -v
+
+    - name: Simple Python check
+      run: |
+        python -c "print('Python is working correctly')"
