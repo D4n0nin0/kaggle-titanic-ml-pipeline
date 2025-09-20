@@ -171,3 +171,104 @@ jupyter notebook
 # Ejecutar todo el pipeline de principio a fin
 python src/train.py && python -m pytest tests/ -v && python src/api.py
 
+```
+# 🐳 Ejecución con Docker
+
+```bash
+
+# PASO 1 CONSTRUIR IMAGEN DE DOCKER
+
+# Construir la imagen de Docker con tag 'titanic-ml'
+docker build -t titanic-ml .
+
+# Verificar que la imagen fue creada
+docker images | grep titanic-ml
+
+#PASO 2 EJECUTAR CONTENEDOR DE DOCKER
+
+# Ejecutar el contenedor mapeando puerto 5000
+docker run -p 5000:5000 --name titanic-container titanic-ml
+
+# Ejecutar en modo detached (segundo plano)
+# docker run -d -p 5000:5000 --name titanic-container titanic-ml
+
+# PASO 3 PROBAR API DOCKERIZADO
+
+# Probar endpoint de health
+curl http://localhost:5000/health
+
+# Probar endpoint de predicciones
+curl -X POST http://localhost:5000/predict \
+  -H "Content-Type: application/json" \
+  -d '{
+    "Pclass": 1,
+    "Sex": "female", 
+    "Age": 25,
+    "SibSp": 0,
+    "Parch": 0,
+    "Fare": 50,
+    "Embarked": "C"
+  }'
+
+# PASO 4 GESTIONAR CONTENEDOR DE DOCKER
+
+# Detener el contenedor
+docker stop titanic-container
+
+# Iniciar el contenedor nuevamente
+docker start titanic-container
+
+# Ver logs del contenedor
+docker logs titanic-container
+
+# Eliminar contenedor
+docker rm titanic-container
+
+# Eliminar imagen
+docker rmi titanic-ml
+
+```
+# 📊 Verificación y Monitoreo
+
+```bash
+
+# VERIFICAR METRICAS DEL MODELO
+
+# Verificar archivo de métricas del modelo
+cat models/model_metrics.json
+
+# Output esperado:
+# {"accuracy": 0.82, "precision": 0.85, "recall": 0.78, "f1_score": 0.81}
+
+# PROBAR API CON script de python
+
+# Crear archivo test_api.py
+echo '
+import requests
+import json
+
+# Probar endpoint de health
+response = requests.get("http://localhost:5000/health")
+print("Health check:", response.json())
+
+# Probar predicción
+data = {
+    "Pclass": 1,
+    "Sex": "female", 
+    "Age": 25,
+    "SibSp": 0,
+    "Parch": 0,
+    "Fare": 50,
+    "Embarked": "C"
+}
+
+response = requests.post("http://localhost:5000/predict", json=data)
+print("Prediction result:", response.json())
+' > test_api.py
+
+# Ejecutar script de prueba
+python test_api.py
+
+# VERIFICAR ESTADO DEL PIPELINE CI/CD
+
+# Visitar GitHub repository → pestaña Actions
